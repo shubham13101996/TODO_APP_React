@@ -1,9 +1,22 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import "./style.css"
+
+
+// getting the localStorage data 
+const getStorageData = ()=>{
+const data = localStorage.getItem('myList');
+ if (data) {
+return JSON.parse(data);
+} else {
+  return [];
+}
+};
+
+
 const App = () => {
   //  our state variable
   const [input,setInput]=useState('');
-  const[item,setItem]=useState([]); 
+  const[item,setItem]=useState(getStorageData()); 
 
   // adding the item 
   const addItem = ()=>{
@@ -31,6 +44,11 @@ const App = () => {
 const clearAll = ()=>{
   setItem([]);
 };
+
+// adding localStorage using useEffect hook
+useEffect(()=>{
+localStorage.setItem('myList', JSON.stringify(item));
+},[item]);
 
 
   return (
