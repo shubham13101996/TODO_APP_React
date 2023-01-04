@@ -1,25 +1,44 @@
 import React, { useState } from 'react'
 import "./style.css"
 const App = () => {
-
+  //  our state variable
   const [input,setInput]=useState('');
   const[item,setItem]=useState([]); 
 
+  // adding the item 
   const addItem = ()=>{
     if(!input){
-      alert('Empty List Cannot Be Store..!!')
-    }else{
-    setItem([...item,input]);
-    setInput('');
+      alert('Empty List Cannot Be Add..!!')
+    } else {
+      const myNewData = {
+        id : new Date().getTime().toString(),
+        name:input
+      }
+     setItem([...item,myNewData]);
+     setInput('');
     }
-  }
+  };
+
+  // deleting the particular item 
+  const deleteItem=(index)=>{
+    const filteredData = item.filter((curElem)=>{
+      return curElem.id!==index;
+    })
+    setItem(filteredData);
+  };
+
+// removing all the list 
+const clearAll = ()=>{
+  setItem([]);
+};
+
 
   return (
     <>
       <div className='main-div'>
           <div className='child-div'>
               <figure>
-                <img src='' alt='todo-logo'/>
+                <img src='./todo.webp' alt='todo-logo'/>
                 <figcaption>Add Your List Here...✌</figcaption>
               </figure>
                 <div className='addItem'>
@@ -32,13 +51,13 @@ const App = () => {
                       {/* Show Items Here */}
 
                       <div className='showItems'>
-                         {item.map((curElem,index)=>{
+                         {item.map((curElem)=>{
                           return (
-                            <div className='eachItem' key={index}>
-                            <h3>{curElem}</h3>
+                            <div className='eachItem' key={curElem.id}>
+                            <h3>{curElem.name}</h3>
                             <div className='todo-btn'>
                                <i className='far fa-edit add-btn' ></i>
-                               <i className='far fa-trash-alt add-btn' ></i>
+                               <i className='far fa-trash-alt add-btn' onClick={()=>{deleteItem(curElem.id)}}></i>
                              </div>
                           </div>
                           )
@@ -47,7 +66,7 @@ const App = () => {
 
                       {/* Remove Button */}
                 <div className='showItems'>
-                 <button className='btn effect04' data-sm-link-text="REMOVE ALL"> <span> CHECK LIST</span> </button>
+                 <button className='btn effect04' data-sm-link-text="REMOVE ALL" onClick={clearAll}> <span> CHECK LIST</span> </button>
               </div>
          </div>
       </div> 
