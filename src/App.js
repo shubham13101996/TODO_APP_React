@@ -13,12 +13,13 @@ const getLocalData = () => {
 };
 
 const App = () => {
+  //  hooks
   const [inputdata, setInputData] = useState("");
   const [items, setItems] = useState(getLocalData());
   const [isEditItem, setIsEditItem] = useState("");
   const [toggleButton, setToggleButton] = useState(false);
 
-  // add the items fucnction
+  // add the items function
   const addItem = () => {
     if (!inputdata) {
       alert("plz fill the data");
@@ -36,6 +37,7 @@ const App = () => {
       setIsEditItem(null);
       setToggleButton(false);
     } else {
+      // fill all the prev item using spread operator and set new item also
       const myNewInputData = {
         id: new Date().getTime().toString(),
         name: inputdata,
@@ -45,7 +47,7 @@ const App = () => {
     }
   };
 
-  //edit the items
+  // edit item by finding them with help of id
   const editItem = (index) => {
     const item_todo_edited = items.find((curElem) => {
       return curElem.id === index;
@@ -55,7 +57,7 @@ const App = () => {
     setToggleButton(true);
   };
 
-  // how to delete items section
+  // remove particular item using filter function with help of unique identifier that is id
   const deleteItem = (index) => {
     const updatedItems = items.filter((curElem) => {
       return curElem.id !== index;
@@ -68,7 +70,9 @@ const App = () => {
     setItems([]);
   };
 
-  // adding localStorage
+  // here we store the item state in local storage basically we want when there
+  // is change in item state data automatically store in local storage
+  // aur jaha Automatic kaam aye waha "useEffect" ka use hoga
   useEffect(() => {
     localStorage.setItem("mytodolist", JSON.stringify(items));
   }, [items]);
@@ -97,8 +101,11 @@ const App = () => {
           </div>
           {/* show our items  */}
           <div className="showItems">
+            {/* here loop over the items state to show each item  */}
+
             {items.map((curElem) => {
               return (
+                //  remember to pass key to div
                 <div className="eachItem" key={curElem.id}>
                   <h3>{curElem.name}</h3>
                   <div className="todo-btn">
@@ -116,7 +123,7 @@ const App = () => {
             })}
           </div>
 
-          {/* rmeove all button  */}
+          {/* remove all button  */}
           <div className="showItems">
             <button
               className="btn effect04"
