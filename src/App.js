@@ -1,95 +1,135 @@
-import React, { useEffect, useState } from 'react'
-import "./style.css"
+import React, { useState, useEffect } from "react";
+import "./style.css";
 
+// get the localStorage data back
+const getLocalData = () => {
+  const lists = localStorage.getItem("mytodolist");
 
-// getting the localStorage data 
-const getStorageData = ()=>{
-const data = localStorage.getItem('myList');
- if (data) {
-return JSON.parse(data);
-} else {
-  return [];
-}
+  if (lists) {
+    return JSON.parse(lists);
+  } else {
+    return [];
+  }
 };
 
-
 const App = () => {
-  //  our state variable
-  const [input,setInput]=useState('');
-  const[item,setItem]=useState(getStorageData()); 
+  const [inputdata, setInputData] = useState("");
+  const [items, setItems] = useState(getLocalData());
+  const [isEditItem, setIsEditItem] = useState("");
+  const [toggleButton, setToggleButton] = useState(false);
 
-  // adding the item 
-  const addItem = ()=>{
-    if(!input){
-      alert('Empty List Cannot Be Add..!!')
+  // add the items fucnction
+  const addItem = () => {
+    if (!inputdata) {
+      alert("plz fill the data");
+    } else if (inputdata && toggleButton) {
+      setItems(
+        items.map((curElem) => {
+          if (curElem.id === isEditItem) {
+            return { ...curElem, name: inputdata };
+          }
+          return curElem;
+        })
+      );
+
+      setInputData("");
+      setIsEditItem(null);
+      setToggleButton(false);
     } else {
-      const myNewData = {
-        id : new Date().getTime().toString(),
-        name:input
-      }
-     setItem([...item,myNewData]);
-     setInput('');
+      const myNewInputData = {
+        id: new Date().getTime().toString(),
+        name: inputdata,
+      };
+      setItems([...items, myNewInputData]);
+      setInputData("");
     }
   };
 
-  // deleting the particular item 
-  const deleteItem=(index)=>{
-    const filteredData = item.filter((curElem)=>{
-      return curElem.id!==index;
-    })
-    setItem(filteredData);
+  //edit the items
+  const editItem = (index) => {
+    const item_todo_edited = items.find((curElem) => {
+      return curElem.id === index;
+    });
+    setInputData(item_todo_edited.name);
+    setIsEditItem(index);
+    setToggleButton(true);
   };
 
-// removing all the list 
-const clearAll = ()=>{
-  setItem([]);
-};
+  // how to delete items section
+  const deleteItem = (index) => {
+    const updatedItems = items.filter((curElem) => {
+      return curElem.id !== index;
+    });
+    setItems(updatedItems);
+  };
 
-// adding localStorage using useEffect hook
-useEffect(()=>{
-localStorage.setItem('myList', JSON.stringify(item));
-},[item]);
+  // remove all the elements
+  const removeAll = () => {
+    setItems([]);
+  };
 
+  // adding localStorage
+  useEffect(() => {
+    localStorage.setItem("mytodolist", JSON.stringify(items));
+  }, [items]);
 
   return (
     <>
-      <div className='main-div'>
-          <div className='child-div'>
-              <figure>
-                <img src='./todo.webp' alt='todo-logo'/>
-                <figcaption>Add Your List Here...✌</figcaption>
-              </figure>
-                <div className='addItem'>
-                   <input type='text' placeholder=' ✍ Add Item..' className='form-control'
-                    value={input}
-                    onChange={(e)=>setInput(e.target.value)}
-                   />
-                   <i className='fa fa-plus add-btn' onClick={addItem}></i>
+      <div className="main-div">
+        <div className="child-div">
+          <figure>
+            <img src="./todo.webp" alt="todologo" />
+            <figcaption>Add Your List Here ✌</figcaption>
+          </figure>
+          <div className="addItems">
+            <input
+              type="text"
+              placeholder="✍ Add Item"
+              className="form-control"
+              value={inputdata}
+              onChange={(event) => setInputData(event.target.value)}
+            />
+            {toggleButton ? (
+              <i className="far fa-edit add-btn" onClick={addItem}></i>
+            ) : (
+              <i className="fa fa-plus add-btn" onClick={addItem}></i>
+            )}
+          </div>
+          {/* show our items  */}
+          <div className="showItems">
+            {items.map((curElem) => {
+              return (
+                <div className="eachItem" key={curElem.id}>
+                  <h3>{curElem.name}</h3>
+                  <div className="todo-btn">
+                    <i
+                      className="far fa-edit add-btn"
+                      onClick={() => editItem(curElem.id)}
+                    ></i>
+                    <i
+                      className="far fa-trash-alt add-btn"
+                      onClick={() => deleteItem(curElem.id)}
+                    ></i>
+                  </div>
                 </div>
-                      {/* Show Items Here */}
+              );
+            })}
+          </div>
 
-                      <div className='showItems'>
-                         {item.map((curElem)=>{
-                          return (
-                            <div className='eachItem' key={curElem.id}>
-                            <h3>{curElem.name}</h3>
-                            <div className='todo-btn'>
-                               <i className='far fa-edit add-btn' ></i>
-                               <i className='far fa-trash-alt add-btn' onClick={()=>{deleteItem(curElem.id)}}></i>
-                             </div>
-                          </div>
-                          )
-                          })}
-                      </div>
-
-                      {/* Remove Button */}
-                <div className='showItems'>
-                 <button className='btn effect04' data-sm-link-text="REMOVE ALL" onClick={clearAll}> <span> CHECK LIST</span> </button>
-              </div>
-         </div>
-      </div> 
+          {/* rmeove all button  */}
+          <div className="showItems">
+            <button
+              className="btn effect04"
+              data-sm-link-text="Remove All"
+              onClick={removeAll}
+            >
+              <span> CHECK LIST</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
